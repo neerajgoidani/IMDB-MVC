@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DeltaXProject.CustomValidator;
 
 namespace DeltaXProject.Models
 {
@@ -21,7 +22,7 @@ namespace DeltaXProject.Models
         [CustomDateValidator]
         public DateTime YearOfRelease { get; set; }
 
-        [Required,MaxLength(15, ErrorMessage = "Length cannot be more than 15 characters")]
+        [Required,MaxLength(60, ErrorMessage = "Plot cannot be more than 60 characters")]
         public string Plot { get; set; }
 
 

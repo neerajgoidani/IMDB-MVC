@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace DeltaXProject.Models
+namespace DeltaXProject.CustomValidator
 {
     public class CustomDateValidator : ValidationAttribute
     {
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (value != null)
@@ -33,5 +32,6 @@ namespace DeltaXProject.Models
                 return new ValidationResult("" + validationContext.DisplayName + " is required");
             }
         }
+
     }
 }

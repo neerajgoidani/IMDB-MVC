@@ -11,12 +11,12 @@ using System.Web.Mvc;
 using DeltaXProject.DAL;
 using DeltaXProject.Models;
 
+
 namespace DeltaXProject.Controllers
 {
     public class MovieController : Controller
     {
         private ApplicationContext db = new ApplicationContext();
-
 
         public ActionResult Index()
         {
@@ -31,12 +31,11 @@ namespace DeltaXProject.Controllers
         /// <returns></returns>
         public async Task<ActionResult> RetrieveImage(int id)
         {
-                Movie item = await db.Movies.FindAsync(id);
+            Movie item = await db.Movies.FindAsync(id);
 
-                byte[] photoBack = item.Poster;
+            byte[] photoBack = item.Poster;
 
-                return File(photoBack, "image/png");
-  
+            return File(photoBack, "image/png");
         }
 
 
@@ -62,15 +61,11 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
 
-
-           
         }
-
-
-
 
 
         /// <summary>
@@ -102,7 +97,6 @@ namespace DeltaXProject.Controllers
                         flag = 1;
                     }
 
-
                     if (flag == 1)
                     {
 
@@ -121,7 +115,6 @@ namespace DeltaXProject.Controllers
                     }
                     else
                     {
-
                         var actorToAdd = new Actor
                         {
                             ActorName = movieVM.Actor.ActorName,
@@ -132,16 +125,7 @@ namespace DeltaXProject.Controllers
                         db.Actors.Add(actorToAdd);
                         db.SaveChanges();
                         return RedirectToAction("Create");
-
-
-
-
                     }
-
-
-
-
-
                 }
                 else
                 {
@@ -158,18 +142,12 @@ namespace DeltaXProject.Controllers
                     ViewBag.actorToBeAdded = true;
                     return View("Create");
                 }
-
-
             }
             catch (Exception e)
             {
                 ViewBag.Error = "Some unexpected error occured. Try again.";
                 return View("Index");
             }
-
-
-
-
         }
         /// <summary>
         /// Adding a new producer
@@ -198,11 +176,8 @@ namespace DeltaXProject.Controllers
                         flag = 1;
                     }
 
-
-
                     if (flag == 1)
                     {
-
                         ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName");
                         int[] SelectedActorId = new int[] { 1 };
                         ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
@@ -214,7 +189,6 @@ namespace DeltaXProject.Controllers
                         ViewBag.ActorList = actorList;
                         ViewBag.producerToBeAdded = true;
                         return View("Create");
-
                     }
                     else
                     {
@@ -228,7 +202,6 @@ namespace DeltaXProject.Controllers
                         db.Producers.Add(producerToAdd);
                         db.SaveChanges();
                         return RedirectToAction("Create");
-
                     }
                 }
                 else
@@ -246,17 +219,12 @@ namespace DeltaXProject.Controllers
                     ViewBag.producerToBeAdded = true;
                     return View("Create");
                 }
-
-
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
-
-
-           
-
         }
 
 
@@ -275,7 +243,6 @@ namespace DeltaXProject.Controllers
                 movieViewModel.Movie = new Movie();
                 movieViewModel.Producer = new Producer();
                 movieViewModel.Actor = new Actor();
-
                 ViewBag.actorToBeAdded = false;
                 ViewBag.producerToBeAdded = false;
                 if (actorAdded == true)
@@ -286,7 +253,6 @@ namespace DeltaXProject.Controllers
                 {
                     ViewBag.producerToBeAdded = true;
                 }
-
                 int[] SelectedActorId = new int[] { 1 };
                 ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                 List<SelectListItem> actorList = new List<SelectListItem>();
@@ -300,11 +266,9 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
-
-
-
         }
 
         /// <summary>
@@ -376,7 +340,7 @@ namespace DeltaXProject.Controllers
                     return View(movieVM);
                 }
 
-                
+
             }
             catch (Exception e)
             {
@@ -384,10 +348,14 @@ namespace DeltaXProject.Controllers
                 return View("Index");
             }
 
-
-
         }
 
+        /// <summary>
+        /// Check if a movie with the same name exists
+        /// </summary>
+        /// <param name="producer">new movie</param>
+        /// <returns>true if a movie with the same name exists</returns>
+        /// 
         [NonAction]
         private bool CheckIfMovieExists(Movie movie)
         {
@@ -398,7 +366,11 @@ namespace DeltaXProject.Controllers
             }
             return false;
         }
-
+        /// <summary>
+        /// Check if a actor with the same name exists
+        /// </summary>
+        /// <param name="producer">new actor</param>
+        /// <returns>true if a actor with the same name exists</returns>
         [NonAction]
         private bool CheckIfActorExists(Actor actor)
         {
@@ -410,29 +382,34 @@ namespace DeltaXProject.Controllers
             return false;
         }
 
-
+        /// <summary>
+        /// Check if a producer with the same name exists
+        /// </summary>
+        /// <param name="producer">new producer</param>
+        /// <returns>true if a producer with the same name exists</returns>
         [NonAction]
         private bool CheckIfProducerExists(Producer producer)
         {
-            
-                if (db.Producers.Any(p => p.ProducerName.Equals(producer.ProducerName, StringComparison.CurrentCultureIgnoreCase)))
-                {
-                    return true;
-                }
-                return false;
-                       
-            
-        }
 
+            if (db.Producers.Any(p => p.ProducerName.Equals(producer.ProducerName, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// To check if gender is male or female
+        /// </summary>
+        /// <param name="gender"></param>
+        /// <returns>true if gender is male or female.</returns>
         [NonAction]
         private bool CheckIfGenderIsCorrect(string gender)
-        {          
-                if (gender.Equals("Male", StringComparison.CurrentCultureIgnoreCase) || gender.Equals("Female", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return true;
-                }
-                return false;
-
+        {
+            if (gender.Equals("Male", StringComparison.CurrentCultureIgnoreCase) || gender.Equals("Female", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return true;
+            }
+            return false;
         }
 
 
@@ -444,12 +421,10 @@ namespace DeltaXProject.Controllers
         [NonAction]
         private byte[] UploadImageInDataBase(HttpPostedFileBase file)
         {
-            
-                byte[] imageBytes = null;
-                BinaryReader reader = new BinaryReader(file.InputStream);
-                imageBytes = reader.ReadBytes((int)file.ContentLength);
-                return imageBytes;
-            
+            byte[] imageBytes = null;
+            BinaryReader reader = new BinaryReader(file.InputStream);
+            imageBytes = reader.ReadBytes((int)file.ContentLength);
+            return imageBytes;
         }
 
         /// <summary>
@@ -462,8 +437,6 @@ namespace DeltaXProject.Controllers
         {
             try
             {
-
-
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -473,11 +446,8 @@ namespace DeltaXProject.Controllers
                 {
                     return HttpNotFound();
                 }
-
-
                 var actorsIdList = movie.Actors.Select(a => a.ID);
                 ViewBag.movieActorsSelectedId = actorsIdList;
-
                 var totalActorList = db.Actors;
                 ViewBag.totalActorList = new SelectList(totalActorList, "ActorID", "ActorName");
                 int[] SelectedValues = actorsIdList.ToArray();
@@ -494,12 +464,10 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
-
         }
-
-
 
         /// <summary>
         /// Movie data to edited
@@ -514,7 +482,6 @@ namespace DeltaXProject.Controllers
         {
             try
             {
-
                 if (ModelState.IsValid)
                 {
                     bool exists = CheckIfMovieExists(movieModel);
@@ -522,29 +489,24 @@ namespace DeltaXProject.Controllers
                     {
                         ViewBag.Error = "Movie with same name exists.";
                         ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieModel.ProducerID);
+
                         var totalActorList = db.Actors;
                         ViewBag.totalActorList = new SelectList(totalActorList, "ActorID", "ActorName");
-
                         string selectednewActorIds = form["SelectedValues"];
                         string[] newActorIds = selectednewActorIds.Split(',');
-
                         int[] SelectedValues = Array.ConvertAll(newActorIds, s => int.Parse(s));
                         ViewBag.SelectedValues = SelectedValues;
-
                         List<SelectListItem> values = new List<SelectListItem>();
                         foreach (var actor in db.Actors)
                         {
                             values.Add(new SelectListItem { Value = actor.ID.ToString(), Text = actor.ActorName });
                         }
-
                         ViewBag.Values = values;
                         ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieModel.ProducerID);
-                     
                         return View(movieModel);
                     }
                     else
                     {
-
                         string selectednewActorIds = form["SelectedValues"];
                         string[] newActorIds = selectednewActorIds.Split(',');
 
@@ -567,45 +529,33 @@ namespace DeltaXProject.Controllers
                         return RedirectToAction("Index");
                     }
 
-
-
                 }
                 else
                 {
                     ViewBag.Error = "Movie could not be edited. Some error occured in the model.";
                     ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieModel.ProducerID);
-                    
+
 
                     var totalActorList = db.Actors;
                     ViewBag.totalActorList = new SelectList(totalActorList, "ActorID", "ActorName");
-
-
                     string selectednewActorIds = form["SelectedValues"];
                     string[] newActorIds = selectednewActorIds.Split(',');
-
                     int[] SelectedValues = Array.ConvertAll(newActorIds, s => int.Parse(s));
                     ViewBag.SelectedValues = SelectedValues;
-                   
                     List<SelectListItem> values = new List<SelectListItem>();
                     foreach (var actor in db.Actors)
                     {
                         values.Add(new SelectListItem { Value = actor.ID.ToString(), Text = actor.ActorName });
                     }
-
                     ViewBag.Values = values;
                     return View(movieModel);
-
                 }
-                
-                
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
-
-
-
         }
 
         /// <summary>
@@ -641,35 +591,7 @@ namespace DeltaXProject.Controllers
             {
                 return;
             }
-
-
-
-           
         }
-
-        //[NonAction]
-        //public void AddMovieActors(string[] newActorIds, Movie movieToUpdate)
-        //{
-        //    if (newActorIds == null)
-        //    {
-        //        movieToUpdate.Actors = new List<Actor>(); // updating it with empty actors
-        //        return;
-        //    }
-
-        //    var initalMovieActorList = movieToUpdate.Actors;
-        //    var newMovieActorList = new List<Actor>();
-
-        //    foreach (string x in newActorIds)
-        //    {
-        //        Actor actor = db.Actors.Where(y => y.ID.ToString() == x).Single();
-        //        newMovieActorList.Add(actor);
-
-        //    }
-        //    movieToUpdate.Actors = newMovieActorList;
-        //    db.SaveChanges();
-
-        //}
-
 
 
         /// <summary>
@@ -694,12 +616,9 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
-
-
-
-            
         }
 
         /// <summary>
@@ -720,13 +639,9 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
-
-
-
-            
         }
 
         protected override void Dispose(bool disposing)

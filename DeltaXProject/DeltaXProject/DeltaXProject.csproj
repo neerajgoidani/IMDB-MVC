@@ -133,16 +133,16 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ActorController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MovieController.cs" />
+    <Compile Include="Controllers\ProducerController.cs" />
     <Compile Include="CustomValidator\CustomAgeValidator.cs" />
+    <Compile Include="CustomValidator\CustomDateValidator.cs" />
     <Compile Include="DAL\ApplicationContext.cs" />
     <Compile Include="DAL\ApplicationInitializer.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Actor.cs" />
-    <Compile Include="Models\CustomDateValidator.cs" />
     <Compile Include="Models\MovieViewModel.cs" />
     <Compile Include="Models\Movie.cs" />
     <Compile Include="Models\Producer.cs" />
@@ -196,6 +196,11 @@
     <Content Include="Views\Movie\Details.cshtml" />
     <Content Include="Views\Movie\Edit.cshtml" />
     <Content Include="Views\Movie\Index.cshtml" />
+    <Content Include="Views\Producer\Create.cshtml" />
+    <Content Include="Views\Producer\Delete.cshtml" />
+    <Content Include="Views\Producer\Details.cshtml" />
+    <Content Include="Views\Producer\Edit.cshtml" />
+    <Content Include="Views\Producer\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

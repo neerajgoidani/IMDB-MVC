@@ -24,7 +24,7 @@ namespace DeltaXProject.Models
         [CustomAgeValidator]
         public DateTime Dob { get; set; }
 
-        [Required,MaxLength(15, ErrorMessage = "Length cannot be more than 20 characters")]
+        [Required,MaxLength(50, ErrorMessage = "Length cannot be more than 50 characters")]
         public string Bio { get; set; }
 
         public virtual ICollection<Movie> Movies { get; set; }

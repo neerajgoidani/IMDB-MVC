@@ -11,16 +11,16 @@ using DeltaXProject.Models;
 
 namespace DeltaXProject.Controllers
 {
-    public class ActorController : Controller
+    public class ProducerController : Controller
     {
         private ApplicationContext db = new ApplicationContext();
 
-        // GET: List of all actors
+        // GET: List of Producers
         public ActionResult Index()
         {
             try
             {
-                return View(db.Actors.ToList());
+                return View(db.Producers.ToList());
             }
             catch (Exception e)
             {
@@ -30,7 +30,7 @@ namespace DeltaXProject.Controllers
 
         }
 
-        // GET: Details of an Actor
+        // GET: Details of a Producer
         public ActionResult Details(int? id)
         {
             try
@@ -39,12 +39,12 @@ namespace DeltaXProject.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Actor actor = db.Actors.Find(id);
-                if (actor == null)
+                Producer producer = db.Producers.Find(id);
+                if (producer == null)
                 {
                     return HttpNotFound();
                 }
-                return View(actor);
+                return View(producer);
             }
             catch (Exception e)
             {
@@ -55,46 +55,53 @@ namespace DeltaXProject.Controllers
 
         }
 
-        // GET: Create a new Actor
+        // GET: Create a new Producer
         public ActionResult Create()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception e)
+            {
+                ViewBag.Error = "Something unexpected happened.";
+                return View("Index");
+            }
+
+
         }
 
-        // POST: Create a new Actor      
+        // POST: Create a new Producer
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ActorName,Sex,Dob,Bio")] Actor actor)
+        public ActionResult Create([Bind(Include = "ProducerID,ProducerName,Sex,Dob,Bio")] Producer producer)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfActorExists(actor);
+                    bool exists = CheckIfProducerExists(producer);
 
 
                     if (exists)
                     {
                         ViewBag.Error = "Actor with same name already exists";
-                        return View(actor);
+                        return View(producer);
                     }
-                    else if (!CheckIfGenderIsCorrect(actor.Sex))
+                    else if (!CheckIfGenderIsCorrect(producer.Sex))
                     {
                         ViewBag.Error = "Please enter male or female as gender.";
-                        return View(actor);
+                        return View(producer);
 
                     }
-                    else
-                    {
-
-                        db.Actors.Add(actor);
-                        db.SaveChanges();
-                        return RedirectToAction("Index");
-                    }
 
 
+                    db.Producers.Add(producer);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
                 }
-                return View(actor);
+
+                return View(producer);
             }
             catch (Exception e)
             {
@@ -103,11 +110,9 @@ namespace DeltaXProject.Controllers
             }
 
 
-
-
         }
 
-        // GET: Edit an Actor
+        // GET: Edit a Producer
         public ActionResult Edit(int? id)
         {
             try
@@ -116,12 +121,12 @@ namespace DeltaXProject.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Actor actor = db.Actors.Find(id);
-                if (actor == null)
+                Producer producer = db.Producers.Find(id);
+                if (producer == null)
                 {
                     return HttpNotFound();
                 }
-                return View(actor);
+                return View(producer);
             }
             catch (Exception e)
             {
@@ -132,39 +137,38 @@ namespace DeltaXProject.Controllers
 
         }
 
-        // POST: Edit an Actor
+        // POST: Edit a Producer
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ActorName,Sex,Dob,Bio")] Actor actor)
+        public ActionResult Edit([Bind(Include = "ProducerID,ProducerName,Sex,Dob,Bio")] Producer producer)
         {
             try
             {
+
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfActorExists(actor);
+                    bool exists = CheckIfProducerExists(producer);
 
 
                     if (exists)
                     {
                         ViewBag.Error = "Actor with same name already exists";
-                        return View(actor);
+                        return View(producer);
                     }
-                    else if (!CheckIfGenderIsCorrect(actor.Sex))
+                    else if (!CheckIfGenderIsCorrect(producer.Sex))
                     {
                         ViewBag.Error = "Please enter male or female as gender.";
-                        return View(actor);
+                        return View(producer);
 
                     }
-                    else
 
-                    {
-                        db.Entry(actor).State = EntityState.Modified;
-                        db.SaveChanges();
-                        return RedirectToAction("Index");
 
-                    }
+
+                    db.Entry(producer).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
                 }
-                return View(actor);
+                return View(producer);
             }
             catch (Exception e)
             {
@@ -172,10 +176,9 @@ namespace DeltaXProject.Controllers
                 return View("Index");
             }
 
-
         }
 
-        // GET: Delete an Actor
+        // GET: Delete a Producer
         public ActionResult Delete(int? id)
         {
             try
@@ -184,12 +187,12 @@ namespace DeltaXProject.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Actor actor = db.Actors.Find(id);
-                if (actor == null)
+                Producer producer = db.Producers.Find(id);
+                if (producer == null)
                 {
                     return HttpNotFound();
                 }
-                return View(actor);
+                return View(producer);
             }
             catch (Exception e)
             {
@@ -200,15 +203,15 @@ namespace DeltaXProject.Controllers
 
         }
 
-        // POST: Delete an Actor
+        // POST: Delete a Producer
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             try
             {
-                Actor actor = db.Actors.Find(id);
-                db.Actors.Remove(actor);
+                Producer producer = db.Producers.Find(id);
+                db.Producers.Remove(producer);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -221,16 +224,17 @@ namespace DeltaXProject.Controllers
 
         }
 
+
         /// <summary>
-        /// Check if a actor with the same name exists
+        /// Check if a producer with the same name exists
         /// </summary>
-        /// <param name="producer">new actor</param>
-        /// <returns>true if a actor with the same name exists</returns>
+        /// <param name="producer">new producer</param>
+        /// <returns>true if a producer with the same name exists</returns>
         [NonAction]
-        private bool CheckIfActorExists(Actor actor)
+        private bool CheckIfProducerExists(Producer producer)
         {
 
-            if (db.Actors.Any(a => a.ActorName.Equals(actor.ActorName, StringComparison.CurrentCultureIgnoreCase)))
+            if (db.Producers.Any(p => p.ProducerName.Equals(producer.ProducerName, StringComparison.CurrentCultureIgnoreCase)))
             {
                 return true;
             }

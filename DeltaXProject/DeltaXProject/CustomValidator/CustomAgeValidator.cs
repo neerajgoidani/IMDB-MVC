@@ -15,7 +15,7 @@ namespace DeltaXProject.CustomValidator
                 DateTime dateTime = (DateTime)value;
                 if (dateTime.CompareTo(new DateTime(1902, 01, 01)) < 0)
                 {
-                    return new ValidationResult("Cannot be older than the oldest person alive.");
+                    return new ValidationResult(" You cannot be older than the oldest person alive.");
                 }
                 else if (dateTime.CompareTo(DateTime.Now.Date) > 0)
                 {

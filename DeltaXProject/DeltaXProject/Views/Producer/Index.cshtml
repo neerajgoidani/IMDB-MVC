@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DeltaXProject.Models.Actor>
+﻿@model IEnumerable<DeltaXProject.Models.Producer>
 
 @{
     ViewBag.Title = "Index";
@@ -14,7 +14,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.ActorName)
+            @Html.DisplayNameFor(model => model.ProducerName)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Sex)
@@ -32,7 +32,7 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ActorName)
+                @Html.DisplayFor(modelItem => item.ProducerName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Sex)
@@ -44,9 +44,9 @@
                 @Html.DisplayFor(modelItem => item.Bio)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.ProducerID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ProducerID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ProducerID })
             </td>
         </tr>
     }
