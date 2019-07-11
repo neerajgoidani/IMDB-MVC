@@ -287,7 +287,7 @@ namespace DeltaXProject.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfMovieExists(movieVM.Movie);
+                    bool exists = CheckIfMovieExists(movieVM.Movie, "Create");
                     if (exists)
                     {
                         ViewBag.Error = "Movie with same name exists.";
@@ -357,14 +357,27 @@ namespace DeltaXProject.Controllers
         /// <returns>true if a movie with the same name exists</returns>
         /// 
         [NonAction]
-        private bool CheckIfMovieExists(Movie movie)
+        private bool CheckIfMovieExists(Movie movie,string mode)
         {
 
-            if (db.Movies.Any(m => m.MovieName.Equals(movie.MovieName, StringComparison.CurrentCultureIgnoreCase)))
+            int count = db.Movies.Count(m => m.MovieName.Equals(movie.MovieName, StringComparison.CurrentCultureIgnoreCase));
+            if (mode.Equals("Create"))
             {
-                return true;
+                if (count > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            else if (mode.Equals("Edit"))
+            {
+                if (count > 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
         }
         /// <summary>
         /// Check if a actor with the same name exists
@@ -484,7 +497,7 @@ namespace DeltaXProject.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfMovieExists(movieModel);
+                    bool exists = CheckIfMovieExists(movieModel, "Edit");
                     if (exists)
                     {
                         ViewBag.Error = "Movie with same name exists.";

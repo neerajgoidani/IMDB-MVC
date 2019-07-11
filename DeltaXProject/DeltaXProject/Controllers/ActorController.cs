@@ -70,7 +70,7 @@ namespace DeltaXProject.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfActorExists(actor);
+                    bool exists = CheckIfActorExists(actor,"Create");
 
 
                     if (exists)
@@ -141,7 +141,7 @@ namespace DeltaXProject.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfActorExists(actor);
+                    bool exists = CheckIfActorExists(actor,"Edit");
 
 
                     if (exists)
@@ -227,14 +227,26 @@ namespace DeltaXProject.Controllers
         /// <param name="producer">new actor</param>
         /// <returns>true if a actor with the same name exists</returns>
         [NonAction]
-        private bool CheckIfActorExists(Actor actor)
+        private bool CheckIfActorExists(Actor actor, string mode)
         {
-
-            if (db.Actors.Any(a => a.ActorName.Equals(actor.ActorName, StringComparison.CurrentCultureIgnoreCase)))
+            int count = db.Actors.Count(a => a.ActorName.Equals(actor.ActorName, StringComparison.CurrentCultureIgnoreCase));
+            if (mode.Equals("Create"))
             {
-                return true;
+                if (count > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            else if (mode.Equals("Edit"))
+            {
+                if (count > 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
         }
 
         /// <summary>

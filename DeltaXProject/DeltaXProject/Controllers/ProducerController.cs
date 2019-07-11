@@ -80,7 +80,7 @@ namespace DeltaXProject.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfProducerExists(producer);
+                    bool exists = CheckIfProducerExists(producer,"Create");
 
 
                     if (exists)
@@ -147,7 +147,7 @@ namespace DeltaXProject.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    bool exists = CheckIfProducerExists(producer);
+                    bool exists = CheckIfProducerExists(producer,"Edit");
 
 
                     if (exists)
@@ -231,14 +231,27 @@ namespace DeltaXProject.Controllers
         /// <param name="producer">new producer</param>
         /// <returns>true if a producer with the same name exists</returns>
         [NonAction]
-        private bool CheckIfProducerExists(Producer producer)
+        private bool CheckIfProducerExists(Producer producer,string mode)
         {
 
-            if (db.Producers.Any(p => p.ProducerName.Equals(producer.ProducerName, StringComparison.CurrentCultureIgnoreCase)))
+            int count = db.Producers.Count(p => p.ProducerName.Equals(producer.ProducerName, StringComparison.CurrentCultureIgnoreCase));
+            if (mode.Equals("Create"))
             {
-                return true;
+                if (count > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            else if (mode.Equals("Edit"))
+            {
+                if (count > 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
