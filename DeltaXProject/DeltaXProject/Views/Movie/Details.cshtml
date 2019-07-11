@@ -1,0 +1,88 @@
+﻿@model DeltaXProject.Models.Movie
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Movie</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MovieName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MovieName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YearOfRelease)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YearOfRelease)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Plot)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Plot)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Poster)
+        </dt>
+
+        <dd>
+            <img src="@Url.Action("RetrieveImage","Movie", new { id = Model.MovieID})" alt="No Image Uploaded" height="100" width="200" />
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Producer.ProducerName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Producer.ProducerName)
+        </dd>
+
+        <dt>
+            Actors
+        </dt>
+
+        <dd>
+            
+            @{ int count = 1;}
+            @foreach (var subitem in Model.Actors)
+            {
+                int actorCount = Model.Actors.Count;
+
+                @subitem.ActorName
+
+                if (count < actorCount)
+                {
+                    count++;
+                    <span>,</span>
+                }
+
+            }
+
+
+        </dd>
+
+
+
+
+
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MovieID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
