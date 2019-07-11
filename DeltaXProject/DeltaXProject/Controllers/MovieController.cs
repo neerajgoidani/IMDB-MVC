@@ -107,7 +107,7 @@ namespace DeltaXProject.Controllers
                     {
 
                         ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName");
-                        int[] SelectedActorId = new int[] { 0 };
+                        int[] SelectedActorId = new int[] { 1 };
                         ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                         List<SelectListItem> actorList = new List<SelectListItem>();
                         foreach (var actor in db.Actors)
@@ -146,7 +146,7 @@ namespace DeltaXProject.Controllers
                 else
                 {
                     ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName");
-                    int[] SelectedActorId = new int[] { 0 };
+                    int[] SelectedActorId = new int[] { 1 };
                     ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                     List<SelectListItem> actorList = new List<SelectListItem>();
                     foreach (var actor in db.Actors)
@@ -163,7 +163,8 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
 
 
@@ -203,7 +204,7 @@ namespace DeltaXProject.Controllers
                     {
 
                         ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName");
-                        int[] SelectedActorId = new int[] { 0 };
+                        int[] SelectedActorId = new int[] { 1 };
                         ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                         List<SelectListItem> actorList = new List<SelectListItem>();
                         foreach (var actor in db.Actors)
@@ -233,7 +234,7 @@ namespace DeltaXProject.Controllers
                 else
                 {
                     ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName");
-                    int[] SelectedActorId = new int[] { 0 };
+                    int[] SelectedActorId = new int[] { 1 };
                     ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                     List<SelectListItem> actorList = new List<SelectListItem>();
                     foreach (var actor in db.Actors)
@@ -286,7 +287,7 @@ namespace DeltaXProject.Controllers
                     ViewBag.producerToBeAdded = true;
                 }
 
-                int[] SelectedActorId = new int[] { 0 };
+                int[] SelectedActorId = new int[] { 1 };
                 ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                 List<SelectListItem> actorList = new List<SelectListItem>();
                 foreach (var actor in db.Actors)
@@ -327,8 +328,8 @@ namespace DeltaXProject.Controllers
                     {
                         ViewBag.Error = "Movie with same name exists.";
                         ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieVM.Movie.ProducerID);
-                        int[] SelectedActorId = new int[] { 0 };
-                        ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
+                        int[] SelectedActorId = new int[] { 1 };
+                        ViewBag.SelectedActorId = SelectedActorId; // setting it as 1 as we cannot not select an actor
                         List<SelectListItem> actorList = new List<SelectListItem>();
                         foreach (var actor in db.Actors)
                         {
@@ -363,7 +364,7 @@ namespace DeltaXProject.Controllers
                 }
                 else
                 {
-                    int[] SelectedActorId = new int[] { 0 };
+                    int[] SelectedActorId = new int[] { 1 };
                     ViewBag.SelectedActorId = SelectedActorId; // setting it as 0 as index automatically starts from 1.
                     List<SelectListItem> actorList = new List<SelectListItem>();
                     foreach (var actor in db.Actors)
@@ -379,7 +380,8 @@ namespace DeltaXProject.Controllers
             }
             catch (Exception e)
             {
-                return RedirectToAction("Index");
+                ViewBag.Error = "Some unexpected error occured. Try again.";
+                return View("Index");
             }
 
 
@@ -502,44 +504,100 @@ namespace DeltaXProject.Controllers
         /// <summary>
         /// Movie data to edited
         /// </summary>
-        /// <param name="movie">the movie which has to be edited</param>
+        /// <param name="movieModel">the movie which has to be edited</param>
         /// <param name="form"></param>
         /// <returns></returns>
         // POST: Movie/Edit/5     
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "MovieID,MovieName,YearOfRelease,Plot,Poster,ProducerID")] Movie movie, FormCollection form)
+        public ActionResult Edit([Bind(Include = "MovieID,MovieName,YearOfRelease,Plot,Poster,ProducerID")] Movie movieModel, FormCollection form)
         {
             try
             {
 
                 if (ModelState.IsValid)
                 {
+                    bool exists = CheckIfMovieExists(movieModel);
+                    if (exists)
+                    {
+                        ViewBag.Error = "Movie with same name exists.";
+                        ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieModel.ProducerID);
+                        var totalActorList = db.Actors;
+                        ViewBag.totalActorList = new SelectList(totalActorList, "ActorID", "ActorName");
+
+                        string selectednewActorIds = form["SelectedValues"];
+                        string[] newActorIds = selectednewActorIds.Split(',');
+
+                        int[] SelectedValues = Array.ConvertAll(newActorIds, s => int.Parse(s));
+                        ViewBag.SelectedValues = SelectedValues;
+
+                        List<SelectListItem> values = new List<SelectListItem>();
+                        foreach (var actor in db.Actors)
+                        {
+                            values.Add(new SelectListItem { Value = actor.ID.ToString(), Text = actor.ActorName });
+                        }
+
+                        ViewBag.Values = values;
+                        ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieModel.ProducerID);
+                     
+                        return View(movieModel);
+                    }
+                    else
+                    {
+
+                        string selectednewActorIds = form["SelectedValues"];
+                        string[] newActorIds = selectednewActorIds.Split(',');
+
+                        HttpPostedFileBase file = Request.Files["Poster"];
+
+                        var movieToUpdate = db.Movies.Single(m => m.MovieID == movieModel.MovieID);
+
+                        movieToUpdate.MovieName = movieModel.MovieName;
+                        movieToUpdate.YearOfRelease = movieModel.YearOfRelease;
+                        movieToUpdate.Plot = movieModel.Plot;
+                        movieToUpdate.ProducerID = movieModel.ProducerID;
+                        UpdateMovieActors(newActorIds, movieToUpdate);
+
+                        if (file != null)
+                        {
+                            byte[] image = UploadImageInDataBase(file);
+                            movieToUpdate.Poster = image;
+                        }
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+
+
+
+                }
+                else
+                {
+                    ViewBag.Error = "Movie could not be edited. Some error occured in the model.";
+                    ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movieModel.ProducerID);
+                    
+
+                    var totalActorList = db.Actors;
+                    ViewBag.totalActorList = new SelectList(totalActorList, "ActorID", "ActorName");
+
+
                     string selectednewActorIds = form["SelectedValues"];
                     string[] newActorIds = selectednewActorIds.Split(',');
 
-                    HttpPostedFileBase file = Request.Files["Poster"];
-
-                    var movieToUpdate = db.Movies.Single(m => m.MovieID == movie.MovieID);
-
-                    movieToUpdate.MovieName = movie.MovieName;
-                    movieToUpdate.YearOfRelease = movie.YearOfRelease;
-                    movieToUpdate.Plot = movie.Plot;
-                    movieToUpdate.ProducerID = movie.ProducerID;
-                    UpdateMovieActors(newActorIds, movieToUpdate);
-
-                    if (file != null)
+                    int[] SelectedValues = Array.ConvertAll(newActorIds, s => int.Parse(s));
+                    ViewBag.SelectedValues = SelectedValues;
+                   
+                    List<SelectListItem> values = new List<SelectListItem>();
+                    foreach (var actor in db.Actors)
                     {
-                        byte[] image = UploadImageInDataBase(file);
-                        movieToUpdate.Poster = image;
+                        values.Add(new SelectListItem { Value = actor.ID.ToString(), Text = actor.ActorName });
                     }
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
 
-                ModelState.AddModelError("error", "some error occured while editing the movie, please try again.");
-                ViewBag.ProducerID = new SelectList(db.Producers, "ProducerID", "ProducerName", movie.ProducerID);
-                return View(movie);
+                    ViewBag.Values = values;
+                    return View(movieModel);
+
+                }
+                
+                
             }
             catch (Exception e)
             {
